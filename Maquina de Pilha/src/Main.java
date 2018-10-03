@@ -1,26 +1,37 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main{
     public static void main(String[]args){
-        ArrayList<String> listaTokens = new ArrayList<String>();
-        try{
-            FileReader arquivo = new FileReader("teste.txt");
-            BufferedReader lerArquivo = new BufferedReader(arquivo);
-            int i = 0;
-            listaTokens.add(lerArquivo.readLine());
-            while(listaTokens.get(i)!= null){
-                i++;
-                listaTokens.add(lerArquivo.readLine());
+        LerArquivo prog1 = new LerArquivo();
+        ArrayList<ArrayList<String>> listaTokens = new ArrayList<ArrayList<String>>();
+        Pilha pilha = new Pilha();
+        int op1,op2 = 0;
+
+        prog1.leituraDeArquivo();
+
+        listaTokens = prog1.getListaTokens();
+        for(int i=0;i<listaTokens.size();i++){
+            if(listaTokens.get(i).get(0).compareToIgnoreCase("PUSH")==0){
+                pilha.push(listaTokens.get(i).get(1));
             }
-            listaTokens.remove(i);
-            for(int c = 0;c<listaTokens.size();c++){
-                System.out.println(listaTokens.get(c));
+            if(listaTokens.get(i).get(0).compareToIgnoreCase("ADD")==0){
+                pilha.push(Integer.toString(pilha.pop()+pilha.pop()));
             }
-        }catch(IOException e){
-            System.err.printf("Erro ao abrir arquivo!", e.getMessage());
+            if(listaTokens.get(i).get(0).compareToIgnoreCase("SUB")==0){
+                pilha.push(Integer.toString(-pilha.pop()+pilha.pop()));
+            }
+            if(listaTokens.get(i).get(0).compareToIgnoreCase("MULT")==0){
+                pilha.push(Integer.toString(pilha.pop()*pilha.pop()));
+            }
+            if(listaTokens.get(i).get(0).compareToIgnoreCase("DIV")==0){
+                op1=pilha.pop();
+                op2=pilha.pop();
+                pilha.push(Integer.toString(op2/op1));
+            }
+            if(listaTokens.get(i).get(0).compareToIgnoreCase("PRINT")==0){
+                System.out.println(pilha.pop());
+            }
         }
+
     }
 }
