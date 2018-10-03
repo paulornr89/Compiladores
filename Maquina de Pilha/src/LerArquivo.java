@@ -3,6 +3,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * @author - Paulo Roberto/Yuri
+ */
 public class LerArquivo {
     private ArrayList<String> programa;
     private ArrayList<ArrayList<String>> listaTokens;
