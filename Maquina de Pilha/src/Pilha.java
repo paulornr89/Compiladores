@@ -1,5 +1,7 @@
 import java.util.ArrayList;
-
+/**
+ * @author - Paulo Roberto/Yuri
+ */
 public class Pilha {
     private ArrayList<String> stack;
 
