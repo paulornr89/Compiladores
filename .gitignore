@@ -2,4 +2,5 @@
 *.class
 /out
 /.idea
-
+*.exe
+*.yy
