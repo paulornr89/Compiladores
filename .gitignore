@@ -3,4 +3,4 @@
 /out
 /.idea
 *.exe
-*.yy
+*.yy.c
