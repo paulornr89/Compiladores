@@ -1,0 +1,163 @@
+PARSER_BEGIN(Karloff)
+import java.io.*;
+
+public class Karloff {
+    public static void main(String args[]) throws ParseException,IOException {
+        Karloff parser = new Karloff(new FileInputStream(args[0]));
+        parser.Lugosi();
+    }
+}
+
+PARSER_END(Karloff)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  <MAIN: "main">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <VOID: "void">
+| <NEWVAR: "newVar">
+| <INT: "int">
+| <PVIRGULA: ";">
+| <BOOL: "bool">
+| <IF: "if">
+| <THEN: "then">
+| <WHILE: "while">
+| <REPEAT: "repeat">
+| <UNTIL: "until">
+| <RETURN: "return">
+| <PRINT: "System.output">
+| <APAREN: "(">
+| <FPAREN: ")">
+| <IGUAL: "=">
+| <VIRGULA: ",">
+| <NFUNC: "func">
+}
+
+TOKEN :
+{
+ <OP: ("+" | "-" | "*" | "/" | "&&" | "||" | "<" | ">" | "==")>
+|< ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])* ("_")+>
+|<NUMLITERAL: (["0"-"9"])+ ("."(["0"-"9"])+)? ("E"(["0"-"9"])+)?>
+|<BOOLEANO: ("true")|("false")>
+}
+
+
+
+void Karloff () :
+{}
+{
+    Main() (Func())? <EOF>
+}
+	
+
+void Main ():
+{}
+{
+    <VOID> <MAIN> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+}
+
+void VarDecl():
+{}
+{
+    VarDecl1()
+}
+
+void VarDecl1():
+{}
+{
+    (<NEWVAR> Tipo() <ID> <PVIRGULA> VarDecl1())?
+}
+
+void Tipo():
+{}
+{
+    <INT>|<BOOL>
+}
+
+void SeqComandos():
+{}
+{
+    SeqComandos1()
+}
+
+void SeqComandos1():
+{}
+{
+    (Comando() SeqComandos1())?
+}
+
+void Comando():
+{}
+{
+    <ID> Comando_Token_id()
+    |<IF> <APAREN> Exp() <FPAREN> <THEN> <ACHAVES> SeqComandos() <FCHAVES> <PVIRGULA>
+    |<WHILE> <APAREN> Exp() <FPAREN> <ACHAVES> SeqComandos() <FCHAVES> <PVIRGULA>
+    |<REPEAT> <ACHAVES> SeqComandos() <FCHAVES> <UNTIL> <APAREN> Exp() <FPAREN> <PVIRGULA>
+    |<RETURN> Exp() <PVIRGULA>
+    |<PRINT> <APAREN> Exp() <FPAREN> <PVIRGULA>
+}
+
+void Comando_Token_id():
+{}
+{
+    <IGUAL> Exp() <PVIRGULA>|<APAREN> (ListaExp())? <FPAREN> <PVIRGULA>
+}
+
+void Exp():
+{}
+{
+    <APAREN> Exp() <OP> Exp() <FPAREN>| Fator()
+}
+
+void Fator():
+{}
+{
+    <ID> Fator_Token_id()
+    |<NUMLITERAL>
+    |<BOOLEANO>
+}
+
+void Fator_Token_id():
+{}
+{
+    (<APAREN> (ListaExp())? <FPAREN>)?
+}
+
+void ListaExp():
+{}
+{
+    Exp() ListaExp1()
+}
+
+void ListaExp1():
+{}
+{
+   (<VIRGULA> Exp() ListaExp1())?
+}
+
+void Func():
+{}
+{
+    (<NFUNC> Tipo() <ID> <APAREN> (ListaArg())? <FPAREN> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>)+
+}
+
+void ListaArg():
+{}
+{
+    Tipo() <ID> ListaArg1()
+}
+
+void ListaArg1():
+{}
+{
+    (<VIRGULA> <ID> ListaArg1())?
+}
