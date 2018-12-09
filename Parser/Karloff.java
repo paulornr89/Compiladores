@@ -4,7 +4,7 @@ import java.io.*;
 public class Karloff implements KarloffConstants {
     public static void main(String args[]) throws ParseException,IOException {
         Karloff parser = new Karloff(new FileInputStream(args[0]));
-        parser.Lugosi();
+        parser.Karloff();
     }
 
   static final public void Karloff() throws ParseException {

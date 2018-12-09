@@ -8,6 +8,174 @@ public class Karloff {
     }
 }
 
+class karloff{
+    Main main;
+    ArrayList <func> funcs;
+}
+
+class Main{
+    ArrayList <VarDecl> VarDecl;
+    ArrayList <Comando> Comandos;
+}
+
+class VarDecl{
+    String var;
+    Tipo tipo;
+}
+
+class Tipo{}
+
+class Int extends Tipo{
+    int num;
+    Int (int num){
+        this.num=num;
+    }
+}
+
+class Bool extends Tipo{
+    String bool;
+    Bool (String bool){
+        this.bool=bool;
+    }
+}
+
+class Comando{}
+
+class Atribuicao extends Comando{
+    String var;
+    Exp exp;
+    Atribuicao(String var, Exp exp){
+        this.var=var;
+        this.exp=exp;
+    }
+}
+
+class ChamadaFunc extends Comando{
+    String func;
+    ArrayList <Exp> arg;
+    ChamadaFunc(String func, ArrayList <exp> arg){
+        this.func=func;
+        this.arg=arg;
+    }
+}
+
+class If extends Comando{
+    Exp bool;
+    ArrayList <Comando> comandos;
+    If(Exp bool,ArrayList <Comando> comandos){
+        this.bool=bool;
+        this.comandos=comandos;
+    }
+}
+
+class While extends Comando{
+    Exp bool;
+    ArrayList <Comando> comandos;
+    While(Exp bool, ArrayList <Comando> comandos){
+        this.bool=bool;
+        this.comandos=comandos;
+    }
+}
+
+class Repeat extends Comando{
+    ArrayList <Comando> comandos;
+    Exp bool;
+    Repeat(ArrayList <Comando> comandos,Exp bool){
+        this.comandos=comandos;
+        this.bool=bool;
+    }
+}
+
+class Return extends Comando{
+    Exp exp;
+    Return(Exp exp){
+    this.exp=exp;
+    }
+}
+
+class SystemOut extends Comando{
+    Exp exp;
+    SystemOut(Exp exp){
+    this.exp=exp;
+    }
+}
+
+class Exp{}
+
+class Fator extends Exp{}
+
+class Id extends Fator{
+    String var;
+    Id(String var){
+        this.var=var;
+    }
+}
+
+class ChamadaFuncFator extends Fator{
+    String func;
+    ArrayList <Exp> exp;
+    ChamadaFuncFator(String func, ArrayList <Exp> arg){
+        this.func=func;
+        this.arg=arg;
+    }
+}
+
+class NumLiteral extends Fator{
+    String num;
+    NumLiteral(String num){
+        this.num=num;
+    }
+}
+
+class BoolTrue extends Fator{
+    String bool;
+    BoolTrue(String bool){
+        this.bool=bool;
+    }
+}
+
+class BoolFalse extends Fator{
+    String bool;
+    BoolFalse(String bool){
+        this.bool=bool;
+    }
+}
+
+class Op{
+    String simbolo;
+    Exp um;
+    Exp dois;
+    Op(String simbolo,Exp um,Exp dois){
+        this.simbolo=simbolo;
+        this.um=um;
+        this.dois=dois;
+    }
+}
+
+class Func{
+    Tipo tipo;
+    String var;
+    ArrayList <Argumento> argumentos;
+    ArrayList <VarDecl> declaracao;
+    ArrayList <Comando> comandos;
+    Func(Tipo tipo, String var, Arraylist <Argumento> argumentos, ArrayList<VarDecl> declaracao, ArrayList <Comando> comandos){
+        this.tipo=tipo;
+        this.var=var;
+        this.argumentos=argumentos;
+        this.declaracao=declaracao;
+        this.comandos=comandos;
+    }
+}
+
+class Argumento{
+    Tipo tipo;
+    String var;
+    Argumento(Tipo tipo, String var){
+        this.tipo=tipo;
+        this.var=var;
+    }
+}
+
 PARSER_END(Karloff)
 
 SKIP :
@@ -52,47 +220,41 @@ TOKEN :
 
 
 
-void Karloff () :
-{}
+ArvoreSintaticaKarloff Karloff () :
+{Main main = null; ArrayList<Func> funcs = null;}
 {
-    Main() (Func())? <EOF>
+    main = Main() (funcs = Func())? <EOF>
+    {return new ArvoreSintaticaKarloff(main, funcs);}
 }
 	
 
-void Main ():
-{}
+Main Main ():
+{ArrayList <VarDecl> vardecl; ArrayList <Comando> comandos;}
 {
-    <VOID> <MAIN> <ACHAVES> VarDecl() SeqComandos() <FCHAVES>
+    <VOID> <MAIN> <ACHAVES> vardecl=VarDecl() comandos=SeqComandos() <FCHAVES>
+    {return new Main(vardecl,comandos);}
 }
 
-void VarDecl():
-{}
+ArrayList <VarDecl> VarDecl():
+{ArrayList <VarDecl> vardecl= new ArrayList <VarDecl>(); Token identificador=null; Tipo tipo = null;}
 {
-    VarDecl1()
+    (<NEWVAR> tipo=Tipo() identificador=<ID> <PVIRGULA> {vardecl.add(new VarDecl(tipo,identificador.image));})*
+    {return vardecl;}
 }
 
-void VarDecl1():
-{}
+
+Tipo Tipo():
+{Token a=null;Token b=null;Tipo tipo=null;}
 {
-    (<NEWVAR> Tipo() <ID> <PVIRGULA> VarDecl1())?
+    (a=<INT> {tipo=new Int(a.image);}|b=<BOOL>{tipo=new Bool(b.image);})
+    {return tipo;}
 }
 
-void Tipo():
-{}
+ArrayList SeqComandos():
+{ArrayList <Comando> seqcomandos=new Comando(); Comando comando=null;}
 {
-    <INT>|<BOOL>
-}
-
-void SeqComandos():
-{}
-{
-    SeqComandos1()
-}
-
-void SeqComandos1():
-{}
-{
-    (Comando() SeqComandos1())?
+    (comando=Comando() {seqcomandos.add(comando);})*
+    {return seqcomandos;}
 }
 
 void Comando():
